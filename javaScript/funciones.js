@@ -21,7 +21,7 @@ var miArrayDisponibles = new Array();
 var miArrayPuzzle = new Array(); 
 
 //array con los (cont) de las piezas que estan mal colocadas
-var contMalColocadas
+var contMalColocadas;
 
 //posicion del raton al clicar en el CANVAS PIEZAS de 'x' y de 'y'
 var mouseXpiezas, mouseYpiezas; 
@@ -52,6 +52,12 @@ var imageDataPuzzle;
 //canvas empleado unicamente para coger la pieza y luego hacer el drag
 var cvUnica;
 
+
+var ilength = 6;
+var jlength = 4;
+var length = 60;
+
+var nohayimagen = true;
 
 // ** OBJETOS  Y VARIABLES *****************************************************************
 
@@ -163,13 +169,13 @@ function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
 
       if(this.canvas.id == "canvasPiezas"){
         this.context.strokeStyle ='#f00';
-        this.context.lineWidth = 4;
-        this.context.strokeRect(posX-2.5,posY-2.5,65,65);
+        this.context.lineWidth = 1;
+        this.context.strokeRect(posX-.5,posY-.5,length+1,length+1);
       }
       else{
         this.context.strokeStyle ='#0f0';
         this.context.lineWidth = 2;
-        this.context.strokeRect(posX,posY,60,60);
+        this.context.strokeRect(posX,posY,length,length);
       }
     }
 
@@ -179,8 +185,8 @@ function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
 
       if(this.canvas.id == "canvasPiezas"){
         this.context.strokeStyle ='#fff';
-        this.context.lineWidth = 5;
-        this.context.strokeRect(posX-2.5,posY-2.5,65,65);
+        this.context.lineWidth = 1;
+        this.context.strokeRect(posX-.5,posY-.5,length+1,length+1);
       }
       else{  
         iniciarCanvasPuzzle();
@@ -193,7 +199,7 @@ function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
     this.marcarMalColocada = function(){
       this.context.strokeStyle ='#f00';
       this.context.lineWidth = 2;
-      this.context.strokeRect(posX,posY,60,60);  
+      this.context.strokeRect(posX,posY,length,length);  
     }
 
     
@@ -238,18 +244,18 @@ function cargarImagen(){
    var imagen = document.getElementById("imgSelecionada");
 
    var nomImagen = document.getElementById("inputSeleccionar").value;
-
+   console.log("holis");
    if(esUnaImagen(nomImagen)){
       console.log(nomImagen);
-   		imagen.src = "imagenes/"+ nomImagen;
+      //TODO------------------------------------------------------------------------------------------------------
+   		imagen.src = nomImagen;
       imagenSelecionada = imagen;
 
       document.getElementById('imgSelecionada').onload = function(){
 
-        recortarImagen2();
+        recortarImagen();
 
-      };
-      
+      };      
    }
    else{
       mostrarPopUp("Por favor, seleccione una imagen");
@@ -294,7 +300,26 @@ function drop(ev){
 
   if(esUnaImagen(ev.dataTransfer.files[0].name)){
     arch.addEventListener('load',leer,false);
-    arch.readAsDataURL(ev.dataTransfer.files[0]);   
+    arch.readAsDataURL(ev.dataTransfer.files[0]);
+
+
+
+
+
+      document.getElementById("dificultad").remove();
+     document.getElementById("dificultad_h2").innerHTML = "Dificultad: ";
+     switch(ilength){
+        case 6:
+        document.getElementById("dificultad_h2").innerHTML += "Baja";
+          break;
+        case 9:
+          document.getElementById("dificultad_h2").innerHTML += "Media";
+          break;
+        case 12:
+          document.getElementById("dificultad_h2").innerHTML += "Alta";
+          break;
+     }
+     document.getElementById("buttonSeleccionar").remove();
   }
   else{
     mostrarPopUp("Por favor, arrastre una imagen");
@@ -309,7 +334,7 @@ function leer(ev) {
  document.getElementById('imgSelecionada').onload = function(){
   imagenSelecionada =  document.getElementById('imgSelecionada');
 
-  recortarImagen2();
+  recortarImagen();
 
  };
  document.getElementById('imgSelecionada').src = ev.target.result; 
@@ -318,42 +343,38 @@ function leer(ev) {
 
 
 //RESTAURA EL CANVAS DEL PUZZLE A LA FORMA INICIAL (REJILLA)
-//DIFICULTAD BAJA
 function iniciarCanvasPuzzle(){
   cvPuzzle.width = cvPuzzle.width;
 
   ctxPuzzle.strokeStyle ='#000';
-  ctxPuzzle.lineWidth = 2;
+  ctxPuzzle.lineWidth = 1;
 
   var contOcupadas = 0;
   var cont = 0;
-  for(i = 0; i < 6; i++){
-    for(j = 0; j < 4; j++){
+  for(i = 0; i < ilength; i++){
+    for(j = 0; j < jlength; j++){
 
-      if( miArrayPuzzle.length != 24){ //para entrar solo la primera vez
+      if( miArrayPuzzle.length != ilength*jlength){ //para entrar solo la primera vez
 
         var miCasillaActual = new miPieza(
           cont,
           cvPuzzle,
           ctxPuzzle,
           undefined,
-          60*i, 
-          60*j, 
+          length*i, 
+          length*j, 
           false,
           false
         );
-
         miArrayPuzzle.push(miCasillaActual);
 
       }
-       
        if(miArrayPuzzle[cont].getImgData() == undefined){
           ctxPuzzle.strokeRect(
-            miArrayPuzzle[cont].getPosX(),
+           miArrayPuzzle[cont].getPosX(),
             miArrayPuzzle[cont].getPosY(),
-            60,
-            60
-          );
+            length,
+            length);
          miArrayPuzzle[cont].setOcupada(false); 
 
       }
@@ -371,10 +392,10 @@ function iniciarCanvasPuzzle(){
         cont++;
     }
   }
-  if(contOcupadas == 24){
+  if(contOcupadas == ilength*jlength){
     document.getElementById('buttonComprobar').style.visibility = 'visible';
   }
-
+  iniciarCanvasPiezas();
 }
 
 //RESTAURA EL CANVAS DEL PIEZAS A LA FORMA INICIAL
@@ -382,22 +403,23 @@ function iniciarCanvasPiezas(){
   cvPiezas.width = cvPiezas.width;
 
   ctxPiezas.strokeStyle ='#f00';
-  ctxPiezas.lineWidth = 4;
-
-
+  ctxPiezas.lineWidth = 1;
+  if(nohayimagen){
+    return;
+  }
   var cont = 0;
-  for(i = 0; i < 6; i++){
-    for(j = 0; j < 4; j++){
+  for(i = 0; i < ilength; i++){
+    for(j = 0; j < jlength; j++){
 
-      if( miArrayDisponibles.length != 24){ //para entrar solo la primera vez
+      if( miArrayDisponibles.length != ilength*jlength){ //para entrar solo la primera vez
 
           var miPiezaActual = new miPieza(
             cont, 
             cvPiezas, 
             ctxPiezas, 
             imgDataArrayDes[cont], 
-            (65*i)+5, 
-            (65*j)+5, 
+            ((length+1)*i)+5, 
+            ((length+1)*j)+5, 
             false,
             false
           );
@@ -425,37 +447,33 @@ function iniciarCanvasPiezas(){
 
 //FUNCION QUE RECORTA Y DIBUJA LAS PIEZAS DEL PUZZLE ADEMAS
 //DE ALMACENAR CADA PIEZA EN UN OBJETO miPieza
-function recortarImagen2(){ //DIFICULTAD BAJA
-  ctxPiezas = cvPiezas.getContext('2d');
-  ctxPuzzle = cvPuzzle.getContext('2d'); 
-
-  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-  //almaceno la imagen para luego compararla con el resultado
-  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-
-  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
-  for(i = 0; i < 6; i++){
-    for(j = 0; j < 4; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(60*i,60*j,60,60));
-    }
+function cambiaDificultad(i){
+  asdfg= i.selectedIndex;
+  switch(asdfg){
+    case 0:
+    ilength = 6;
+    jlength = 4;
+    length = 60;
+    break;
+    case 1:
+    ilength = 9;
+    jlength = 6;
+    length = 40;
+    break;
+    case 2:
+    ilength = 12;
+    jlength = 8;
+    length = 30;
+    break;
   }
-
-  //CLONO Y DESORDENO EL ARRAY
-  imgDataArrayDes = imgDataArrayOrd.slice(0);
-  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
-
-  iniciarCanvasPuzzle();
-  iniciarCanvasPiezas();
-  
-  //Añado los eventListener para poder hacer click derecho en ambos canvas
-  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
-  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
-
+    miArrayPuzzle=new Array();
+   iniciarCanvasPuzzle();
+   if(!nohayimagen){
+    recortarImagen();
+   }
 }
 
-function recortarImagen3(){ //DIFICULTAD MEDIA
+function recortarImagen(){ //DIFICULTAD ALTA
   ctxPiezas = cvPiezas.getContext('2d');
   ctxPuzzle = cvPuzzle.getContext('2d'); 
 
@@ -466,9 +484,9 @@ function recortarImagen3(){ //DIFICULTAD MEDIA
 
 
   //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
-  for(i = 0; i < 9; i++){
-    for(j = 0; j < 6; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(40*i,40*j,40,40));
+  for(i = 0; i < ilength; i++){
+    for(j = 0; j < jlength; j++){
+      imgDataArrayOrd.push(ctxPuzzle.getImageData(length*i,length*j,length,length));
     }
   }
 
@@ -477,36 +495,7 @@ function recortarImagen3(){ //DIFICULTAD MEDIA
   imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
 
   iniciarCanvasPuzzle();
-  iniciarCanvasPiezas();
-  
-  //Añado los eventListener para poder hacer click derecho en ambos canvas
-  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
-  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
-
-}
-
-function recortarImagen4(){ //DIFICULTAD ALTA
-  ctxPiezas = cvPiezas.getContext('2d');
-  ctxPuzzle = cvPuzzle.getContext('2d'); 
-
-  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-  //almaceno la imagen para luego compararla con el resultado
-  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-
-  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
-  for(i = 0; i < 12; i++){
-    for(j = 0; j < 8; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(30*i,30*j,30,30));
-    }
-  }
-
-  //CLONO Y DESORDENO EL ARRAY
-  imgDataArrayDes = imgDataArrayOrd.slice(0);
-  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
-
-  iniciarCanvasPuzzle();
+  nohayimagen=false;
   iniciarCanvasPiezas();
   
   //Añado los eventListener para poder hacer click derecho en ambos canvas
@@ -547,9 +536,9 @@ function toglePiezaDisponibles(){
 
   piezaSelec = miArrayDisponibles.filter(function(el){
       return mouseXpiezas >= el.posX    &&
-             mouseXpiezas <= el.posX+60 &&
+             mouseXpiezas <= el.posX+length &&
              mouseYpiezas >= el.posY    &&
-             mouseYpiezas <= el.posY+60;
+             mouseYpiezas <= el.posY+length;
   });
 
   piezaActualPiezas = piezaSelec[0];
@@ -600,9 +589,9 @@ function manejarPuzzle(){
 
   var piezaClicada = miArrayPuzzle.filter(function(el){
       return mouseXpuzzle >= el.posX    &&
-             mouseXpuzzle <= el.posX+60 &&
+             mouseXpuzzle <= el.posX+length &&
              mouseYpuzzle >= el.posY    &&
-             mouseYpuzzle <= el.posY+60;
+             mouseYpuzzle <= el.posY+length;
   });
 
 
@@ -677,9 +666,11 @@ function manejarPuzzle(){
 
 function aumentarMovimientos(val){
    var movimientos = parseInt(val)+1;
+    if(movimientos ==1){
+      iniciar();
+    }
    contadorMovimientos.innerHTML = movimientos;
 }
-
 
 function comprobarResultado(){
   iniciarCanvasPuzzle();
@@ -701,7 +692,6 @@ function comprobarResultado(){
 
     worker.onmessage = function(e){ // Se asigna el handler para el evento message
       contMalColocadas = e.data.res;
-
       marcarResultado();
 
     };
@@ -710,10 +700,10 @@ function comprobarResultado(){
 
 function marcarResultado(){
   if(contMalColocadas.length == 0){
-
     mostrarPopUp("Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML);
   }
   else{
+    console.log(contMalColocadas);
     for(i = 0; i<contMalColocadas.length; i++){
       var cont = contMalColocadas[i];
       miArrayPuzzle[cont].marcarMalColocada();
@@ -728,7 +718,7 @@ function clickEnButoImagen(){
 
 function cerrarPopUp(){
   if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
-    window.location="file:C:\xampp\htdocs\Practica3MartaGonzalo";
+    window.location="file:C:/xampp/htdocs/Practica3MartaGonzalo";
   }
 
   document.getElementById("popUp").style.visibility ="hidden";
@@ -750,30 +740,25 @@ function mostrarPopUp(val){
 }
 
 function dragStart(event){
-    event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.effectAllowed = 'move';
 
-    if(event.offsetX) {
-      mouseXpiezas = event.offsetX;
-      mouseYpiezas = event.offsetY;
-  }
-  else if(event.layerX) {
-      mouseXpiezas = event.layerX;
-      mouseYpiezas = event.layerY;
+  if(event.offsetX) {
+    mouseXpiezas = event.offsetX;
+    mouseYpiezas = event.offsetY;
+  }else if(event.layerX) {
+    mouseXpiezas = event.layerX;
+    mouseYpiezas = event.layerY;
   }
   
   piezaSelec = miArrayDisponibles.filter(function(el){
       return mouseXpiezas >= el.posX    &&
-             mouseXpiezas <= el.posX+60 &&
+             mouseXpiezas <= el.posX+length &&
              mouseYpiezas >= el.posY    &&
-             mouseYpiezas <= el.posY+60;
+             mouseYpiezas <= el.posY+length;
   });
 
   if(piezaSelec[0] != undefined){
-      ctxUnica.putImageData(
-          piezaSelec[0].getImgData(),
-          0,
-          0
-  );
+      ctxUnica.putImageData(piezaSelec[0].getImgData(),0,0);
 
       var img = document.createElement("img");
 
@@ -783,37 +768,28 @@ function dragStart(event){
 
 
 
-      event.dataTransfer.setDragImage(img, 30, 30);
+      event.dataTransfer.setDragImage(img, length/2, length/2);
 
 
       event.dataTransfer.setData("Text", piezaSelec[0].getCont());
   }
 }
 
-function dropPuzzle(event){
-  
 
-  
-  event.preventDefault();
-  var data = event.dataTransfer.getData("Text");
-
-  if (event.stopPropagation)
-  event.stopPropagation(); // Evita la propagación del evento
-
-if(event.offsetX) {
-      mouseXpuzzle = event.offsetX;
-      mouseYpuzzle = event.offsetY;
+  if(event.offsetX) {
+        mouseXpuzzle = event.offsetX;
+        mouseYpuzzle = event.offsetY;
   }
   else if(event.layerX) {
       mouseXpuzzle = event.layerX;
       mouseYpuzzle = event.layerY;
   }
-  
+
   piezaSelec = miArrayPuzzle.filter(function(el){
       return mouseXpuzzle >= el.posX    &&
-             mouseXpuzzle <= el.posX+60 &&
+             mouseXpuzzle <= el.posX+length &&
              mouseYpuzzle >= el.posY    &&
-             mouseYpuzzle <= el.posY+60;
+             mouseYpuzzle <= el.posY+length;
   });
 
   if(!piezaSelec[0].getOcupada()){
@@ -832,10 +808,91 @@ if(event.offsetX) {
     mostrarPopUp("Esta casilla ya esta ocupada");
   }
 
- 
+   function dropPuzzle(event){
+  
+
+  
+  event.preventDefault();
+  var data = event.dataTransfer.getData("Text");
+
+  if (event.stopPropagation)
+  event.stopPropagation(); // Evita la propagación del evento
+
 
 }
 
+
+
+
+
+
+// Para el reloj
+
+var centesimas = 0;
+var segundos = 0;
+var minutos = 0;
+var horas = 0;
+
+
+function iniciar() {
+  control = setInterval(cronometro,10);
+  document.getElementById("iniciar").disabled = true;
+  document.getElementById("parar").disabled = false;
+  document.getElementById("continuar").disabled = true;
+  document.getElementById("reinicio").disabled = false;
+}
+function parar () {
+  clearInterval(control);
+  document.getElementById("parar").disabled = true;
+  document.getElementById("continuar").disabled = false;
+}
+function reinicio () {
+  clearInterval(control);
+  centesimas = 0;
+  segundos = 0;
+  minutos = 0;
+  horas = 0;
+  Centesimas.innerHTML = ":00";
+  Segundos.innerHTML = ":00";
+  Minutos.innerHTML = ":00";
+  Horas.innerHTML = "00";
+  document.getElementById("iniciar").disabled = false;
+  document.getElementById("parar").disabled = true;
+  document.getElementById("continuar").disabled = true;
+  document.getElementById("reinicio").disabled = true;
+}
+
+function cronometro () {
+  if (centesimas < 99) {
+    centesimas++;
+    if (centesimas < 10) { centesimas = "0"+centesimas }
+    Centesimas.innerHTML = ":"+centesimas;
+  }
+  if (centesimas == 99) {
+    centesimas = -1;
+  }
+  if (centesimas == 0) {
+    segundos ++;
+    if (segundos < 10) { segundos = "0"+segundos }
+    Segundos.innerHTML = ":"+segundos;
+  }
+  if (segundos == 59) {
+    segundos = -1;
+  }
+  if ( (centesimas == 0)&&(segundos == 0) ) {
+    minutos++;
+    if (minutos < 10) { minutos = "0"+minutos }
+    Minutos.innerHTML = ":"+minutos;
+  }
+  if (minutos == 59) {
+    minutos = -1;
+  }
+  if ( (centesimas == 0)&&(segundos == 0)&&(minutos == 0) ) {
+    horas ++;
+    if (horas < 10) { horas = "0"+horas }
+    Horas.innerHTML = horas;
+  }
+}
 
 
 

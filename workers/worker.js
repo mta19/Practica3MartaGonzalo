@@ -17,7 +17,7 @@ self.onmessage = function(e){
       		columna = parseInt(i/240)%8;
 
       		var elemento = (columna*6)+fila;
-
+          contMalColocadas.push(i);  
       		if(contMalColocadas.indexOf(elemento) == -1){
       			contMalColocadas.push(elemento);	
       		}
