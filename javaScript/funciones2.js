@@ -53,11 +53,77 @@ var imageDataPuzzle;
 var cvUnica;
 
 
+
+// Para el reloj
+
+var centesimas = 0;
+var segundos = 0;
+var minutos = 0;
+var horas = 0;
+
+
+function iniciar () {
+	control = setInterval(cronometro,10);
+	document.getElementById("iniciar").disabled = true;
+	document.getElementById("parar").disabled = false;
+	document.getElementById("continuar").disabled = true;
+	document.getElementById("reinicio").disabled = false;
+}
+function parar () {
+	clearInterval(control);
+	document.getElementById("parar").disabled = true;
+	document.getElementById("continuar").disabled = false;
+}
+function reinicio () {
+	clearInterval(control);
+	centesimas = 0;
+	segundos = 0;
+	minutos = 0;
+	horas = 0;
+	Centesimas.innerHTML = ":00";
+	Segundos.innerHTML = ":00";
+	Minutos.innerHTML = ":00";
+	Horas.innerHTML = "00";
+	document.getElementById("iniciar").disabled = false;
+	document.getElementById("parar").disabled = true;
+	document.getElementById("continuar").disabled = true;
+	document.getElementById("reinicio").disabled = true;
+}
+function cronometro () {
+	if (centesimas < 99) {
+		centesimas++;
+		if (centesimas < 10) { centesimas = "0"+centesimas }
+		Centesimas.innerHTML = ":"+centesimas;
+	}
+	if (centesimas == 99) {
+		centesimas = -1;
+	}
+	if (centesimas == 0) {
+		segundos ++;
+		if (segundos < 10) { segundos = "0"+segundos }
+		Segundos.innerHTML = ":"+segundos;
+	}
+	if (segundos == 59) {
+		segundos = -1;
+	}
+	if ( (centesimas == 0)&&(segundos == 0) ) {
+		minutos++;
+		if (minutos < 10) { minutos = "0"+minutos }
+		Minutos.innerHTML = ":"+minutos;
+	}
+	if (minutos == 59) {
+		minutos = -1;
+	}
+	if ( (centesimas == 0)&&(segundos == 0)&&(minutos == 0) ) {
+		horas ++;
+		if (horas < 10) { horas = "0"+horas }
+		Horas.innerHTML = horas;
+	}
+}
+
+
+
 // ** OBJETOS  Y VARIABLES *****************************************************************
-
-
-
-
 
 //FUNCION CONSTRUCTOR DE LAS PIEZAS
 function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
@@ -156,7 +222,7 @@ function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
     this.setOcupada = function(val){
         this.ocupada = val;
     }
-
+/*
     //para resaltar la pieza
     this.ponerContorno = function(){
       this.setSelec();
@@ -195,10 +261,7 @@ function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
       this.context.lineWidth = 2;
       this.context.strokeRect(posX,posY,60,60);  
     }
-
-    
-
-
+*/
 }//FIN DEL OBJETO miPieza
 
 
@@ -223,69 +286,17 @@ function inicio() {
   contadorMovimientos = document.getElementById("pMovimientos");
   textoPopUp = document.getElementById("spanPopUp");
 
-
-  iniciarCanvasPuzzle();
-}
-
-
-
-
-
-// CARGA LA IMAGEN QUE SELECIONAMOS EN EL INPUT
-function cargarImagen(){
-   imagenSelecionada = null;
-
-   var imagen = document.getElementById("imgSelecionada");
-
-   var nomImagen = document.getElementById("inputSeleccionar").value;
-
-   if(esUnaImagen(nomImagen)){
-      console.log(nomImagen);
-   		imagen.src = "imagenes/"+ nomImagen;
-      imagenSelecionada = imagen;
-
-      document.getElementById('imgSelecionada').onload = function(){
-
-        recortarImagen2();
-
-      };
-      
-   }
-   else{
-      mostrarPopUp("Por favor, seleccione una imagen");
-   }
-
-}
-
-
-//PARA VALIDAR SI EL ARCHIVO SELECCIONADO ES UNA IMAGEN
-function esUnaImagen(nomImagen){
-	if(
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".png" ||
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".PNG" ||
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".gif" ||
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".GIF" ||
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".jpg" ||
-   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".JPG"
-   ){
-   		return true;
-   }
-   else{
-   		return false;
-   }
-
-}
-
-
-//IMPRIME UN OBJEO POR CONSOLA
-function imprimirObjeto(o) {
-  var salida = '';
-  for (var p in o) {
-    salida += p + ': ' + o[p] + '\n';
+  if(dificultad.value == 0){
+  	iniciarCanvasPuzzle();
   }
-  console.log(salida);
+  if(dificultad.value == 1){
+  	iniciarCanvasPuzzle1();
+  }
+  if(dificultad.value == 2){
+  	iniciarCanvasPuzzle2();
+  }
+  
 }
-
 
 function drop(ev){
   ev.preventDefault();
@@ -299,22 +310,30 @@ function drop(ev){
   else{
     mostrarPopUp("Por favor, arrastre una imagen");
   }
-}      
-    
-function permitirDrop(ev){
-  ev.preventDefault();
-}    
-    
-function leer(ev) {
- document.getElementById('imgSelecionada').onload = function(){
-  imagenSelecionada =  document.getElementById('imgSelecionada');
-
-  recortarImagen2();
-
- };
- document.getElementById('imgSelecionada').src = ev.target.result; 
 }
 
+function permitirDrop(ev){
+  ev.preventDefault();
+} 
+
+function clickEnButoImagen(){
+  document.getElementById("inputSeleccionar").click();
+
+  cvPiezas = document.getElementById("canvasPiezas");
+  ctxPiezas = cvPiezas.getContext('2d');
+
+  cvPuzzle = document.getElementById("canvasPuzzle");
+  ctxPuzzle = cvPuzzle.getContext('2d');
+
+  cvUnica = document.getElementById("canvasUnica");
+  ctxUnica = cvUnica.getContext('2d');
+
+  contadorMovimientos = document.getElementById("pMovimientos");
+  textoPopUp = document.getElementById("spanPopUp");
+
+
+  iniciarCanvasPuzzle();
+}
 
 
 //RESTAURA EL CANVAS DEL PUZZLE A LA FORMA INICIAL (REJILLA)
@@ -377,6 +396,293 @@ function iniciarCanvasPuzzle(){
 
 }
 
+
+
+
+
+
+
+
+
+//RESTAURA EL CANVAS DEL PUZZLE A LA FORMA INICIAL (REJILLA)
+//DIFICULTAD BAJA
+function iniciarCanvasPuzzle1(){
+  cvPuzzle.width = cvPuzzle.width;
+
+  ctxPuzzle.strokeStyle ='#000';
+  ctxPuzzle.lineWidth = 2;
+
+  var contOcupadas = 0;
+  var cont = 0;
+  for(i = 0; i < 9; i++){
+    for(j = 0; j < 6; j++){
+
+      if( miArrayPuzzle.length != 54){ //para entrar solo la primera vez
+
+        var miCasillaActual = new miPieza(
+          cont,
+          cvPuzzle,
+          ctxPuzzle,
+          undefined,
+          40*i, 
+          40*j, 
+          false,
+          false
+        );
+
+        miArrayPuzzle.push(miCasillaActual);
+
+      }
+       
+       if(miArrayPuzzle[cont].getImgData() == undefined){
+          ctxPuzzle.strokeRect(
+            miArrayPuzzle[cont].getPosX(),
+            miArrayPuzzle[cont].getPosY(),
+            40,
+            40
+          );
+         miArrayPuzzle[cont].setOcupada(false); 
+
+      }
+      else{
+        contOcupadas++;
+        ctxPuzzle.putImageData(
+          miArrayPuzzle[cont].getImgData(),
+          miArrayPuzzle[cont].getPosX(),
+          miArrayPuzzle[cont].getPosY()
+        );
+         miArrayPuzzle[cont].setOcupada(true);
+
+      }
+
+        cont++;
+    }
+  }
+  if(contOcupadas == 54){
+    document.getElementById('buttonComprobar').style.visibility = 'visible';
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+// CARGA LA IMAGEN QUE SELECIONAMOS EN EL INPUT
+function cargarImagen(){
+   imagenSelecionada = null;
+
+   var imagen = document.getElementById("imgSelecionada");
+
+   var nomImagen = document.getElementById("inputSeleccionar").value;
+
+   if(esUnaImagen(nomImagen)){
+      console.log(nomImagen);
+   		imagen.src = "imagenes/"+ nomImagen;
+      imagenSelecionada = imagen;
+
+      document.getElementById('imgSelecionada').onload = function(){
+
+
+      	if(dificultad.value == 0){
+  			recortarImagen2();
+  		}
+  		if(dificultad.value == 1){
+  			recortarImagen3();
+  		}
+  		if(dificultad.value == 2){
+  			recortarImagen4();
+  		}
+        
+
+      };
+      
+   }
+   else{
+      mostrarPopUp("Por favor, seleccione una imagen");
+   }
+
+}
+
+
+//PARA VALIDAR SI EL ARCHIVO SELECCIONADO ES UNA IMAGEN
+function esUnaImagen(nomImagen){
+	if(
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".png" ||
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".PNG" ||
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".gif" ||
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".GIF" ||
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".jpg" ||
+   		nomImagen.substring(nomImagen.length-4,nomImagen.length) == ".JPG"
+   ){
+   		return true;
+   }
+   else{
+   		return false;
+   }
+
+}
+
+
+
+function cerrarPopUp(){
+  if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
+    window.location="file:C: xampp/htdocs/Practica3MartaGonzalo";
+  }
+
+  document.getElementById("popUp").style.visibility ="hidden";
+
+  document.getElementById("header").style.opacity = 1;
+  document.getElementById("main").style.opacity = 1;
+  document.getElementById("footer").style.opacity = 1;
+
+}
+
+function mostrarPopUp(val){
+  textoPopUp.innerHTML = val;
+  document.getElementById("popUp").style.visibility ="visible";
+
+  document.getElementById("header").style.opacity = 0.3;
+  document.getElementById("main").style.opacity = 0.3;
+  document.getElementById("footer").style.opacity = 0.3;
+
+}
+
+
+function leer(ev) {
+ document.getElementById('imgSelecionada').onload = function(){
+  imagenSelecionada =  document.getElementById('imgSelecionada');
+
+  recortarImagen2();
+
+ };
+ document.getElementById('imgSelecionada').src = ev.target.result; 
+}
+
+
+//FUNCION QUE RECORTA Y DIBUJA LAS PIEZAS DEL PUZZLE ADEMAS
+//DE ALMACENAR CADA PIEZA EN UN OBJETO miPieza
+function recortarImagen2(){ //DIFICULTAD BAJA
+  ctxPiezas = cvPiezas.getContext('2d');
+  ctxPuzzle = cvPuzzle.getContext('2d'); 
+
+  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+  //almaceno la imagen para luego compararla con el resultado
+  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+
+  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
+  for(i = 0; i < 6; i++){
+    for(j = 0; j < 4; j++){
+      imgDataArrayOrd.push(ctxPuzzle.getImageData(60*i,60*j,60,60));
+    }
+  }
+
+  //CLONO Y DESORDENO EL ARRAY
+  imgDataArrayDes = imgDataArrayOrd.slice(0);
+  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
+
+  iniciarCanvasPuzzle();
+  iniciarCanvasPiezas();
+  
+  //Añado los eventListener para poder hacer click derecho en ambos canvas
+  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
+  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
+
+}
+
+
+
+
+
+
+
+
+function recortarImagen3(){ //DIFICULTAD MEDIA
+  ctxPiezas = cvPiezas.getContext('2d');
+  ctxPuzzle = cvPuzzle.getContext('2d'); 
+
+  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+  //almaceno la imagen para luego compararla con el resultado
+  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+
+  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
+  for(i = 0; i < 9; i++){
+    for(j = 0; j < 6; j++){
+      imgDataArrayOrd.push(ctxPuzzle.getImageData(40*i,40*j,40,40));
+    }
+  }
+
+  //CLONO Y DESORDENO EL ARRAY
+  imgDataArrayDes = imgDataArrayOrd.slice(0);
+  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
+
+  iniciarCanvasPuzzle1();
+  iniciarCanvasPiezas1();
+  
+  //Añado los eventListener para poder hacer click derecho en ambos canvas
+  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
+  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+function recortarImagen4(){ //DIFICULTAD ALTA
+  ctxPiezas = cvPiezas.getContext('2d');
+  ctxPuzzle = cvPuzzle.getContext('2d'); 
+
+  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+  //almaceno la imagen para luego compararla con el resultado
+  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
+
+
+  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
+  for(i = 0; i < 12; i++){
+    for(j = 0; j < 8; j++){
+      imgDataArrayOrd.push(ctxPuzzle.getImageData(30*i,30*j,30,30));
+    }
+  }
+
+  //CLONO Y DESORDENO EL ARRAY
+  imgDataArrayDes = imgDataArrayOrd.slice(0);
+  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
+
+  iniciarCanvasPuzzle2();
+  iniciarCanvasPiezas2();
+  
+  //Añado los eventListener para poder hacer click derecho en ambos canvas
+  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
+  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
+
+}
+
+
+
+
+
+
+
+
+
+
 //RESTAURA EL CANVAS DEL PIEZAS A LA FORMA INICIAL
 function iniciarCanvasPiezas(){
   cvPiezas.width = cvPiezas.width;
@@ -420,100 +726,95 @@ function iniciarCanvasPiezas(){
     }
   }
 
-}
+  //RESTAURA EL CANVAS DEL PIEZAS A LA FORMA INICIAL
+function iniciarCanvasPiezas1(){
+  cvPiezas.width = cvPiezas.width;
+
+  ctxPiezas.strokeStyle ='#f00';
+  ctxPiezas.lineWidth = 4;
 
 
-//FUNCION QUE RECORTA Y DIBUJA LAS PIEZAS DEL PUZZLE ADEMAS
-//DE ALMACENAR CADA PIEZA EN UN OBJETO miPieza
-function recortarImagen2(){ //DIFICULTAD BAJA
-  ctxPiezas = cvPiezas.getContext('2d');
-  ctxPuzzle = cvPuzzle.getContext('2d'); 
-
-  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-  //almaceno la imagen para luego compararla con el resultado
-  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-
-  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
-  for(i = 0; i < 6; i++){
-    for(j = 0; j < 4; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(60*i,60*j,60,60));
-    }
-  }
-
-  //CLONO Y DESORDENO EL ARRAY
-  imgDataArrayDes = imgDataArrayOrd.slice(0);
-  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
-
-  iniciarCanvasPuzzle();
-  iniciarCanvasPiezas();
-  
-  //Añado los eventListener para poder hacer click derecho en ambos canvas
-  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
-  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
-
-}
-
-function recortarImagen3(){ //DIFICULTAD MEDIA
-  ctxPiezas = cvPiezas.getContext('2d');
-  ctxPuzzle = cvPuzzle.getContext('2d'); 
-
-  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-  //almaceno la imagen para luego compararla con el resultado
-  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-
-  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
+  var cont = 0;
   for(i = 0; i < 9; i++){
     for(j = 0; j < 6; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(40*i,40*j,40,40));
+
+      if( miArrayDisponibles.length != 54){ //para entrar solo la primera vez
+
+          var miPiezaActual = new miPieza(
+            cont, 
+            cvPiezas, 
+            ctxPiezas, 
+            imgDataArrayDes[cont], 
+            (45*i)+5, 
+            (45*j)+5, 
+            false,
+            false
+          );
+
+          miArrayDisponibles.push(miPiezaActual);
+          
+      }
+       
+      
+      if(miArrayDisponibles[cont] != undefined){ //para que solo la pinte cuando exista  
+         
+          ctxPiezas.putImageData(
+            miArrayDisponibles[cont].getImgData(),
+            miArrayDisponibles[cont].getPosX(),
+            miArrayDisponibles[cont].getPosY()
+          );
+      }
+      cont++;
+
     }
   }
 
-  //CLONO Y DESORDENO EL ARRAY
-  imgDataArrayDes = imgDataArrayOrd.slice(0);
-  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
-
-  iniciarCanvasPuzzle();
-  iniciarCanvasPiezas();
-  
-  //Añado los eventListener para poder hacer click derecho en ambos canvas
-  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
-  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
-
-}
-
-function recortarImagen4(){ //DIFICULTAD ALTA
-  ctxPiezas = cvPiezas.getContext('2d');
-  ctxPuzzle = cvPuzzle.getContext('2d'); 
-
-  ctxPuzzle.drawImage(imagenSelecionada, 0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
-
-  //almaceno la imagen para luego compararla con el resultado
-  imageDataOriginal = ctxPuzzle.getImageData(0, 0, 360, 240); //Esto lo he cambiado era 480 y 360
 
 
-  //METO EN imgDataArrayOrd LAS 48 PIESZAS DE LA IMAGEN
-  for(i = 0; i < 12; i++){
-    for(j = 0; j < 8; j++){
-      imgDataArrayOrd.push(ctxPuzzle.getImageData(30*i,30*j,30,30));
+  //RESTAURA EL CANVAS DEL PIEZAS A LA FORMA INICIAL
+function iniciarCanvasPiezas2(){
+  cvPiezas.width = cvPiezas.width;
+
+  ctxPiezas.strokeStyle ='#f00';
+  ctxPiezas.lineWidth = 4;
+
+
+  var cont = 0;
+  for(i = 0; i < 6; i++){
+    for(j = 0; j < 4; j++){
+
+      if( miArrayDisponibles.length != 24){ //para entrar solo la primera vez
+
+          var miPiezaActual = new miPieza(
+            cont, 
+            cvPiezas, 
+            ctxPiezas, 
+            imgDataArrayDes[cont], 
+            (65*i)+5, 
+            (65*j)+5, 
+            false,
+            false
+          );
+
+          miArrayDisponibles.push(miPiezaActual);
+          
+      }
+       
+      
+      if(miArrayDisponibles[cont] != undefined){ //para que solo la pinte cuando exista  
+         
+          ctxPiezas.putImageData(
+            miArrayDisponibles[cont].getImgData(),
+            miArrayDisponibles[cont].getPosX(),
+            miArrayDisponibles[cont].getPosY()
+          );
+      }
+      cont++;
+
     }
   }
-
-  //CLONO Y DESORDENO EL ARRAY
-  imgDataArrayDes = imgDataArrayOrd.slice(0);
-  imgDataArrayDes = imgDataArrayDes.sort(function() {return Math.random() - 0.5});
-
-  iniciarCanvasPuzzle();
-  iniciarCanvasPiezas();
-  
-  //Añado los eventListener para poder hacer click derecho en ambos canvas
-  cvPiezas.addEventListener("mousedown",clikCanvasPiezas,false);
-  cvPuzzle.addEventListener("mousedown",clikCanvasPuzzle,false);
-
 }
+
 
 
 //funcion que actualiza la posicion en la que he clicado en el canvas de piezas
@@ -541,10 +842,9 @@ function clikCanvasPiezas(e){
   toglePiezaDisponibles();
 }
 
+
 //selecciona o deselecciona la piezza clicada del canvas de piezas disponibles
 function toglePiezaDisponibles(){
-
-
   piezaSelec = miArrayDisponibles.filter(function(el){
       return mouseXpiezas >= el.posX    &&
              mouseXpiezas <= el.posX+60 &&
@@ -573,27 +873,13 @@ function toglePiezaDisponibles(){
         piezaActualPiezas = undefined;
       }
   }
-
   else{ //para cuando pincho en una zona vacia del canvas y tengo una pieza contorneada
     iniciarCanvasPiezas();
   }
 
 }
 
-//se activa cuando clico en el canvas puzzle
-function clikCanvasPuzzle(e){
-  if(e.offsetX) {
-      mouseXpuzzle = e.offsetX;
-      mouseYpuzzle = e.offsetY;
-  }
-  else if(e.layerX) {
-      mouseXpuzzle = e.layerX;
-      mouseYpuzzle = e.layerY;
-  }
 
-  manejarPuzzle();
-
-}
 
 
 function manejarPuzzle(){
@@ -675,79 +961,8 @@ function manejarPuzzle(){
 }
 
 
-function aumentarMovimientos(val){
-   var movimientos = parseInt(val)+1;
-   contadorMovimientos.innerHTML = movimientos;
-}
 
 
-function comprobarResultado(){
-  iniciarCanvasPuzzle();
-
-  if(piezaActualPuzzle != undefined){
-    piezaActualPuzzle = undefined;
-    
-  }
-
-  imageDataPuzzle = ctxPuzzle.getImageData(0, 0, 360, 240);
-
-
-
-
-  worker.postMessage({
-    'imageDataOriginal':imageDataOriginal.data,
-    'imageDataPuzzle':imageDataPuzzle.data, 
-  });  
-
-    worker.onmessage = function(e){ // Se asigna el handler para el evento message
-      contMalColocadas = e.data.res;
-
-      marcarResultado();
-
-    };
-}
-
-
-function marcarResultado(){
-  if(contMalColocadas.length == 0){
-
-    mostrarPopUp("Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML);
-  }
-  else{
-    for(i = 0; i<contMalColocadas.length; i++){
-      var cont = contMalColocadas[i];
-      miArrayPuzzle[cont].marcarMalColocada();
-    }   
-  }
-   
-}
-
-function clickEnButoImagen(){
-  document.getElementById("inputSeleccionar").click();
-}
-
-function cerrarPopUp(){
-  if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
-    window.location="file:C:\xampp\htdocs\Practica3MartaGonzalo";
-  }
-
-  document.getElementById("popUp").style.visibility ="hidden";
-
-  document.getElementById("header").style.opacity = 1;
-  document.getElementById("main").style.opacity = 1;
-  document.getElementById("footer").style.opacity = 1;
-
-}
-
-function mostrarPopUp(val){
-  textoPopUp.innerHTML = val;
-  document.getElementById("popUp").style.visibility ="visible";
-
-  document.getElementById("header").style.opacity = 0.3;
-  document.getElementById("main").style.opacity = 0.3;
-  document.getElementById("footer").style.opacity = 0.3;
-
-}
 
 function dragStart(event){
     event.dataTransfer.effectAllowed = 'move';
@@ -772,8 +987,7 @@ function dragStart(event){
       ctxUnica.putImageData(
           piezaSelec[0].getImgData(),
           0,
-          0
-  );
+          0);
 
       var img = document.createElement("img");
 
@@ -835,11 +1049,3 @@ if(event.offsetX) {
  
 
 }
-
-
-
-
-
-
-
-
