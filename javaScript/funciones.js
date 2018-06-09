@@ -310,8 +310,8 @@ function cargarImagen(){
 
    var imagen = document.getElementById("imgSelecionada");
 
-   var nomImagen = document.getElementById("inputSeleccionar").value;
-   console.log("holis");
+   var nomImagen = document.getElementById("inputSeleccionar").files[0].name;
+   //console.log("holis");
    if(esUnaImagen(nomImagen)){
       console.log(nomImagen);
       //TODO------------------------------------------------------------------------------------------------------
@@ -784,17 +784,14 @@ function marcarResultado(){
    
 }
 
-function clickEnButoImagen(ev){
+function clickEnButoImagen(){
   document.getElementById("inputSeleccionar").click();
 
 
-  var arch=new FileReader();
+  var nomImagen = document.getElementById("inputSeleccionar").files[0].name;
+   console.log("holis");
 
-
-  if(esUnaImagen(ev.dataTransfer.files[0].name)){
-    arch.addEventListener('load',leer,false);
-    arch.readAsDataURL(ev.dataTransfer.files[0]);
-
+   if(esUnaImagen(nomImagen)){
 
      document.getElementById("dificultad").remove();
      document.getElementById("dificultad_h2").innerHTML = "Dificultad: ";
@@ -820,7 +817,7 @@ function clickEnButoImagen(ev){
 
 function cerrarPopUp(){
   if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
-    window.location="file:C:/xampp/htdocs/Practica3MartaGonzalo";
+    window.location="file:C:/xampp/htdocs/Practica3MartaGonzalo/imagenes";
   }
 
   document.getElementById("popUp").style.visibility ="hidden";
