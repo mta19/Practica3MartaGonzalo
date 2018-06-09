@@ -65,6 +65,73 @@ var nohayimagen = true;
 
 
 
+// Para el reloj
+
+var centesimas = 0;
+var segundos = 0;
+var minutos = 0;
+var horas = 0;
+
+function parar () {
+  clearInterval(control);
+  document.getElementById("parar").disabled = true;
+  document.getElementById("continuar").disabled = false;
+}
+
+function reinicio () {
+  control = setInterval(cronometro,10);
+  clearInterval(control);
+  centesimas = 0;
+  segundos = 0;
+  minutos = 0;
+  horas = 0;
+  Centesimas.innerHTML = ":00";
+  Segundos.innerHTML = ":00";
+  Minutos.innerHTML = ":00";
+  Horas.innerHTML = "00";
+  document.getElementById("inicio").disabled = false;
+  document.getElementById("parar").disabled = true;
+  document.getElementById("continuar").disabled = true;
+  document.getElementById("reinicio").disabled = true;
+}
+function cronometro () {
+  if (centesimas < 99) {
+    centesimas++;
+    if (centesimas < 10) { centesimas = "0"+centesimas }
+    Centesimas.innerHTML = ":"+centesimas;
+  }
+  if (centesimas == 99) {
+    centesimas = -1;
+  }
+  if (centesimas == 0) {
+    segundos ++;
+    if (segundos < 10) { segundos = "0"+segundos }
+    Segundos.innerHTML = ":"+segundos;
+  }
+  if (segundos == 59) {
+    segundos = -1;
+  }
+  if ( (centesimas == 0)&&(segundos == 0) ) {
+    minutos++;
+    if (minutos < 10) { minutos = "0"+minutos }
+    Minutos.innerHTML = ":"+minutos;
+  }
+  if (minutos == 59) {
+    minutos = -1;
+  }
+  if ( (centesimas == 0)&&(segundos == 0)&&(minutos == 0) ) {
+    horas ++;
+    if (horas < 10) { horas = "0"+horas }
+    Horas.innerHTML = horas;
+  }
+}
+
+
+
+
+
+
+
 //FUNCION CONSTRUCTOR DE LAS PIEZAS
 function miPieza(cont, canvas, context, imgData, posX, posY, selec, ocupada){
 
@@ -665,15 +732,20 @@ function manejarPuzzle(){
 
 
 function aumentarMovimientos(val){
-   var movimientos = parseInt(val)+1;
-    if(movimientos ==1){
-      iniciar();
-    }
-   contadorMovimientos.innerHTML = movimientos;
+  var movimientos = parseInt(val)+1;
+  contadorMovimientos.innerHTML = movimientos;
+
+  if(contadorMovimientos.innerHTML == 1){
+    control = setInterval(cronometro,10);
+    reinicio();
+  }
 }
+
 
 function comprobarResultado(){
   iniciarCanvasPuzzle();
+  clearInterval(control);
+  parar();
 
   if(piezaActualPuzzle != undefined){
     piezaActualPuzzle = undefined;
@@ -700,7 +772,7 @@ function comprobarResultado(){
 
 function marcarResultado(){
   if(contMalColocadas.length == 0){
-    mostrarPopUp("Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML);
+    mostrarPopUp("Has conseguido montar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML);
   }
   else{
     console.log(contMalColocadas);
@@ -712,9 +784,39 @@ function marcarResultado(){
    
 }
 
-function clickEnButoImagen(){
+function clickEnButoImagen(ev){
   document.getElementById("inputSeleccionar").click();
+
+
+  var arch=new FileReader();
+
+
+  if(esUnaImagen(ev.dataTransfer.files[0].name)){
+    arch.addEventListener('load',leer,false);
+    arch.readAsDataURL(ev.dataTransfer.files[0]);
+
+
+     document.getElementById("dificultad").remove();
+     document.getElementById("dificultad_h2").innerHTML = "Dificultad: ";
+     switch(ilength){
+        case 6:
+        document.getElementById("dificultad_h2").innerHTML += "Baja";
+          break;
+        case 9:
+          document.getElementById("dificultad_h2").innerHTML += "Media";
+          break;
+        case 12:
+          document.getElementById("dificultad_h2").innerHTML += "Alta";
+          break;
+     }
+     document.getElementById("buttonSeleccionar").remove();
+  }
+  else{
+    mostrarPopUp("Por favor, seleccione una imagen");
+  }
 }
+
+
 
 function cerrarPopUp(){
   if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
@@ -826,73 +928,7 @@ function dragStart(event){
 
 
 
-// Para el reloj
 
-var centesimas = 0;
-var segundos = 0;
-var minutos = 0;
-var horas = 0;
-
-
-function iniciar() {
-  control = setInterval(cronometro,10);
-  document.getElementById("iniciar").disabled = true;
-  document.getElementById("parar").disabled = false;
-  document.getElementById("continuar").disabled = true;
-  document.getElementById("reinicio").disabled = false;
-}
-function parar () {
-  clearInterval(control);
-  document.getElementById("parar").disabled = true;
-  document.getElementById("continuar").disabled = false;
-}
-function reinicio () {
-  clearInterval(control);
-  centesimas = 0;
-  segundos = 0;
-  minutos = 0;
-  horas = 0;
-  Centesimas.innerHTML = ":00";
-  Segundos.innerHTML = ":00";
-  Minutos.innerHTML = ":00";
-  Horas.innerHTML = "00";
-  document.getElementById("iniciar").disabled = false;
-  document.getElementById("parar").disabled = true;
-  document.getElementById("continuar").disabled = true;
-  document.getElementById("reinicio").disabled = true;
-}
-
-function cronometro () {
-  if (centesimas < 99) {
-    centesimas++;
-    if (centesimas < 10) { centesimas = "0"+centesimas }
-    Centesimas.innerHTML = ":"+centesimas;
-  }
-  if (centesimas == 99) {
-    centesimas = -1;
-  }
-  if (centesimas == 0) {
-    segundos ++;
-    if (segundos < 10) { segundos = "0"+segundos }
-    Segundos.innerHTML = ":"+segundos;
-  }
-  if (segundos == 59) {
-    segundos = -1;
-  }
-  if ( (centesimas == 0)&&(segundos == 0) ) {
-    minutos++;
-    if (minutos < 10) { minutos = "0"+minutos }
-    Minutos.innerHTML = ":"+minutos;
-  }
-  if (minutos == 59) {
-    minutos = -1;
-  }
-  if ( (centesimas == 0)&&(segundos == 0)&&(minutos == 0) ) {
-    horas ++;
-    if (horas < 10) { horas = "0"+horas }
-    Horas.innerHTML = horas;
-  }
-}
 
 
 
