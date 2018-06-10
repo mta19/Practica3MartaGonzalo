@@ -784,36 +784,6 @@ function marcarResultado(){
    
 }
 
-/*function clickEnButoImagen(){
-  document.getElementById("inputSeleccionar").click();
-
-
-  var nomImagen = document.getElementById("inputSeleccionar").files[0].name;
-   console.log("holis");
-
-   if(esUnaImagen(nomImagen)){
-
-     document.getElementById("dificultad").remove();
-     document.getElementById("dificultad_h2").innerHTML = "Dificultad: ";
-     switch(ilength){
-        case 6:
-        document.getElementById("dificultad_h2").innerHTML += "Baja";
-          break;
-        case 9:
-          document.getElementById("dificultad_h2").innerHTML += "Media";
-          break;
-        case 12:
-          document.getElementById("dificultad_h2").innerHTML += "Alta";
-          break;
-     }
-     document.getElementById("buttonSeleccionar").remove();
-  }
-  else{
-    mostrarPopUp("Por favor, seleccione una imagen");
-  }
-}*/
-
-
 
 function cerrarPopUp(){
   if(textoPopUp.innerHTML == "Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML){
