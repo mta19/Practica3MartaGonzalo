@@ -73,9 +73,7 @@ var minutos = 0;
 var horas = 0;
 var control;
 
-function parar () {
-  clearInterval(control);
-}
+
 
 function reinicio () {
   control = setInterval(cronometro,10);
@@ -89,6 +87,12 @@ function reinicio () {
   Minutos.innerHTML = ":00";
   Horas.innerHTML = "00";
 }
+
+function parar () {
+  window.clearInterval(control);
+  console.log("Holiii, llegas a entrar aqui o que?");
+}
+
 function cronometro () {
   if (centesimas < 99) {
     centesimas++;
@@ -768,7 +772,7 @@ function marcarResultado(){
   if(contMalColocadas.length == 0){
     clearInterval(control);
     parar();
-    mostrarPopUp("Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML + "Tiempo: " + Horas.innerHTML + Minutos.innerHTML + Segundos.innerHTML + Centesimas.innerHTML);
+    mostrarPopUp("Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML);
   }
   else{
     console.log(contMalColocadas);
@@ -812,7 +816,7 @@ function marcarResultado(){
 
 
 function cerrarPopUp(){
-  if(textoPopUp.innerHTML == "Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML + "Tiempo: " + Horas.innerHTML + Minutos.innerHTML + Segundos.innerHTML + Centesimas.innerHTML){
+  if(textoPopUp.innerHTML == "Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML){
     clearInterval(control);
     location.reload();
     parar();
