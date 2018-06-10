@@ -71,11 +71,10 @@ var centesimas = 0;
 var segundos = 0;
 var minutos = 0;
 var horas = 0;
+var control;
 
 function parar () {
   clearInterval(control);
-  document.getElementById("parar").disabled = true;
-  document.getElementById("continuar").disabled = false;
 }
 
 function reinicio () {
@@ -89,10 +88,6 @@ function reinicio () {
   Segundos.innerHTML = ":00";
   Minutos.innerHTML = ":00";
   Horas.innerHTML = "00";
-  document.getElementById("inicio").disabled = false;
-  document.getElementById("parar").disabled = true;
-  document.getElementById("continuar").disabled = true;
-  document.getElementById("reinicio").disabled = true;
 }
 function cronometro () {
   if (centesimas < 99) {
@@ -386,7 +381,6 @@ function drop(ev){
           document.getElementById("dificultad_h2").innerHTML += "Alta";
           break;
      }
-     document.getElementById("buttonSeleccionar").remove();
   }
   else{
     mostrarPopUp("Por favor, arrastre una imagen");
@@ -772,7 +766,9 @@ function comprobarResultado(){
 
 function marcarResultado(){
   if(contMalColocadas.length == 0){
-    mostrarPopUp("Has conseguido montar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML);
+    clearInterval(control);
+    parar();
+    mostrarPopUp("Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML + "Tiempo: " + Horas.innerHTML + Minutos.innerHTML + Segundos.innerHTML + Centesimas.innerHTML);
   }
   else{
     console.log(contMalColocadas);
@@ -816,8 +812,10 @@ function marcarResultado(){
 
 
 function cerrarPopUp(){
-  if(textoPopUp.innerHTML == "Has conseguido armar el Puzzle ! Movimientos: "+contadorMovimientos.innerHTML){
-    window.location="file:C:/xampp/htdocs/Practica3MartaGonzalo/imagenes";
+  if(textoPopUp.innerHTML == "Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML + "Tiempo: " + Horas.innerHTML + Minutos.innerHTML + Segundos.innerHTML + Centesimas.innerHTML){
+    clearInterval(control);
+    location.reload();
+    parar();
   }
 
   document.getElementById("popUp").style.visibility ="hidden";
@@ -825,6 +823,8 @@ function cerrarPopUp(){
   document.getElementById("header").style.opacity = 1;
   document.getElementById("main").style.opacity = 1;
   document.getElementById("footer").style.opacity = 1;
+
+
 
 }
 
