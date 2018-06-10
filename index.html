@@ -16,20 +16,18 @@
 <body >
 
 <header id="header" class ="transparentar">
-	<a href="index.html"><img src="iconos/logo.png" alt="Logo del sitio" id="imgLogo"></a> 
+	<a href="index.html"><img src="imagenes/Puzzle.png" alt="Logo del sitio" id="imgLogo"></a> 
 	<h1 id="h1">Puzzle PCW</h1>
 </header>
 
 <main id="main" >
 
 	<section id="sectionCargador" class ="transparentar">
-		<h2 id="h2Cargador">Seccion para cargar la imagen</h2>
-		<p id="pCargador">Seleccione o arrastre una imagen para empezar a jugar</p>
+		<p id="pCargador">Seleccione una dificultad y arrastre una imagen para empezar a jugar</p>
 		<div>
 		<img id="imgSelecionada" src="imagenes/arrastrar.png" alt="Imagen seleccionada" width="360" height="240" onclick="clickEnButoImagen();">
 		</div>
 
-		<button id="buttonSeleccionar" onclick="clickEnButoImagen();">Examinar</button>
 		<input id="inputSeleccionar" type="file" onchange="cargarImagen();" accept="image/*">
 
 		<h2 id="dificultad_h2">Dificultad:</h2>

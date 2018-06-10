@@ -784,7 +784,7 @@ function marcarResultado(){
    
 }
 
-function clickEnButoImagen(){
+/*function clickEnButoImagen(){
   document.getElementById("inputSeleccionar").click();
 
 
@@ -811,7 +811,7 @@ function clickEnButoImagen(){
   else{
     mostrarPopUp("Por favor, seleccione una imagen");
   }
-}
+}*/
 
 
 
