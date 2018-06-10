@@ -90,7 +90,7 @@ function reinicio () {
 
 function parar () {
   window.clearInterval(control);
-  console.log("Holiii, llegas a entrar aqui o que?");
+  //console.log("Holiii, llegas a entrar aqui o que?");
 }
 
 function cronometro () {
@@ -312,7 +312,7 @@ function cargarImagen(){
    var nomImagen = document.getElementById("inputSeleccionar").files[0].name;
    //console.log("holis");
    if(esUnaImagen(nomImagen)){
-      console.log(nomImagen);
+     // console.log(nomImagen);
       //TODO------------------------------------------------------------------------------------------------------
    		imagen.src = nomImagen;
       imagenSelecionada = imagen;
@@ -355,7 +355,7 @@ function imprimirObjeto(o) {
   for (var p in o) {
     salida += p + ': ' + o[p] + '\n';
   }
-  console.log(salida);
+  //console.log(salida);
 }
 
 
@@ -775,10 +775,10 @@ function marcarResultado(){
     mostrarPopUp("Has conseguido montar el Puzzle! Movimientos: " + contadorMovimientos.innerHTML);
   }
   else{
-    console.log(contMalColocadas);
+    //console.log(contMalColocadas);
     for(i = 0; i<contMalColocadas.length; i++){
       var cont = contMalColocadas[i];
-      miArrayPuzzle[cont].marcarMalColocada();
+      //miArrayPuzzle[cont].marcarMalColocada();
     }   
   }
    
@@ -800,6 +800,10 @@ function cerrarPopUp(){
 
 
 
+}
+
+function NuevoJuego(){
+  location.reload();
 }
 
 function mostrarPopUp(val){
